@@ -1,0 +1,8 @@
+{
+  "arbitrum-goerli": {
+    "Contract": {
+      "address": "0xD4381D573ab01095e12a2B65313771Fc17Ef3aDF",
+      "startBlock": 41674799
+    }
+  }
+}

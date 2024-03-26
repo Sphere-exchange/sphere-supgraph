@@ -1,0 +1,167 @@
+type SphereFactory @entity {
+  # factory address
+  id: ID!
+
+  # pair info
+  pairCount: Int!
+
+  # transactions
+  txCount: BigInt!
+}
+
+type Token @entity {
+  # token address
+  id: ID!
+
+  # mirrored from the smart contract
+  symbol: String!
+  name: String!
+  decimals: BigInt!
+}
+
+type Pair @entity {
+  # pair address
+  id: ID!
+
+  # Price in terms of asset token0/token1
+  price: BigDecimal!
+
+  # mirrored from the smart contract
+  token0: Token!
+  token1: Token!
+
+  # lifetime volume stats
+  totalVolumeToken0: BigDecimal!
+  totalVolumeToken1: BigDecimal!
+
+  # 24h stats
+  change24H: BigDecimal!
+  high24H: BigDecimal!
+  low24H: BigDecimal!
+  volumeToken024H: BigDecimal!
+  volumeToken124H: BigDecimal!
+
+  txCount: BigInt!
+
+  # creation stats
+  createdAtTimestamp: BigInt!
+  createdAtBlockNumber: BigInt!
+  updateStatsAtTimestamp: BigInt!
+  updateStatsAtBlockNumber: BigInt!
+
+  historyOrders: [HistoryOrder!] @derivedFrom(field: "pair")
+  pairDataAtTimestamp: [PairDataAtTimestamp!] @derivedFrom(field: "pair")
+
+  lastIndexPairData: Int!
+}
+
+type User @entity {
+  id: ID!
+  historyOrder: [HistoryOrder!] @derivedFrom(field: "trader")
+}
+
+type Transaction @entity {
+  id: ID! # txn hash
+  blockNumber: BigInt!
+  timestamp: BigInt!
+
+  historyOrders: HistoryOrder
+  historyMarkets: HistoryMarket
+  historyWallet: HistoryWallet
+}
+
+type HistoryOrder @entity {
+  id: ID! # txn hash
+  trader: User!
+  type: String!
+  action: String!
+  isBuy: Int!
+  amount: BigInt!
+  price: BigInt!
+  executed: BigInt!
+  date: BigInt!
+  transaction: Transaction! @derivedFrom(field: "historyOrders")
+  pair: Pair!
+}
+
+type HistoryMarket @entity {
+  id: ID! # txn hash
+  trader: User!
+  isBuy: Int!
+  amount: BigInt!
+  price: BigInt!
+  date: BigInt!
+  transaction: Transaction! @derivedFrom(field: "historyMarkets")
+  pair: Pair!
+}
+
+type PairDataAtTimestamp @entity {
+  id: ID! # Timestamp
+  volumeToken0: BigDecimal!
+  volumeToken1: BigDecimal!
+  price: BigDecimal!
+  date: BigInt!
+  pair: Pair!
+}
+
+type HistoryWallet @entity {
+  id: ID! # txn hash
+  from: User!
+  token: Token!
+  amount: BigInt!
+  to: User
+  action: String!
+  transaction: Transaction! @derivedFrom(field: "historyWallet")
+}
+# type CreateLimitOrder @entity(immutable: true) {
+#   id: Bytes!
+#   _isBuy: Int! # uint8
+#   _amount: BigInt! # uint256
+#   _price: BigInt! # uint256
+#   trader: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# type MarketOrder @entity(immutable: true) {
+#   id: Bytes!
+#   _isBuy: Int! # uint8
+#   _amount: BigInt! # uint256
+#   _price: BigInt! # uint256
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# type RemoveOrder @entity(immutable: true) {
+#   id: Bytes!
+#   _isBuy: Int! # uint8
+#   _amount: BigInt! # uint256
+#   _price: BigInt! # uint256
+#   trader: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# type SumMarketOrder @entity(immutable: true) {
+#   id: Bytes!
+#   _isBuy: Int! # uint8
+#   _amount: BigInt! # uint256
+#   trader: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
+
+# type UpdateOrder @entity(immutable: true) {
+#   id: Bytes!
+#   _isBuy: Int! # uint8
+#   newPriceOrder: BigInt! # uint256
+#   newAmount: BigInt! # uint256
+#   trader: Bytes! # address
+#   blockNumber: BigInt!
+#   blockTimestamp: BigInt!
+#   transactionHash: Bytes!
+# }
